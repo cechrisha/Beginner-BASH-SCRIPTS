@@ -1,0 +1,23 @@
+#!/bin/bash
+
+echo "Please enter the current time in the format HH:MM"
+read current_time
+
+echo "You entered: $current_time"
+
+# Extract the hour and minute from the input time
+hour=$(echo $current_time | cut -d':' -f1)
+minute=$(echo $current_time | cut -d':' -f2)
+
+# Calculate the time 45 minutes from the input time
+new_minute=$((minute+45))
+new_hour=$hour
+
+if [ $new_minute -ge 60 ]
+then
+  new_minute=$((new_minute-60))
+  new_hour=$((hour+1))
+fi
+
+# Print the new time
+printf "45 minutes from %s is %02d:%02d\n" $current_time $new_hour $new_minute
