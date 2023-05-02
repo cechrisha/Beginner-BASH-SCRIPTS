@@ -1,0 +1,66 @@
+#!/bin/bash
+
+CONFIG_FILE=~/.pomodoro_config
+
+if [[ -f "$CONFIG_FILE" ]]; then
+  # This will check if the Script has been run before
+  echo "Welcome back!"
+else
+  # First time running the script
+  echo "Welcome to my script! It is a Pomodoro Alarm"
+  echo "Performing initial setup..."
+  # Do initial setup here
+  echo "Done."
+  # Create config file
+  touch "$CONFIG_FILE"
+  echo "Config file created."
+fi
+
+#Todo FINISH CONFIG FILE
+current_time=$(date +%s)
+pomodoro_time=$((current_time + 25*60))
+pomodoro_end_time=$(date -d "+1 hour" +%T)
+
+echo "The pomodoro technique is a method to help you get tasks done." 
+echo "For the next 25 minutes try not to be distracted and work!"
+echo "This will give you your first 'Pomodoro'."  
+echo "After getting a pomodoro this script will give you a five minute break."
+echo "After four pomodoros you can take a long break!" 
+echo "Repeat this scripted alarm as many times as you would like!"
+echo "The current time is $(date +%T)."
+echo "The time after one Pomodoro (25 minutes) would be $(date -d@$pomodoro_time +%T)." 
+echo "You can take your first long break at $(date -d "+55 minutes" +%T)."
+echo "Quit any time using ctrl + C"
+
+
+# Define timer function
+function timer() {
+  for i in {1..4}; do
+    echo "You are on your $i pomodoro."
+    sleep $pomodoro_time && echo "Timer finished" &
+    for remaining in $(seq $pomodoro_time -1 1); do
+      echo -ne "\r$(date -u --date @${remaining} +%T)"
+      sleep 1
+    done
+    echo -ne "\n"
+    if [[ $i -lt 4 ]]; then
+      echo "Time for a 5-minute break!"
+      sleep 300 && echo "Break finished" &
+      for remaining in $(seq 300 -1 1); do
+        echo -ne "\r$(date -u --date @${remaining} +%T)"
+        sleep 1
+      done
+      echo -ne "\n"
+    else
+      echo "Great job! You deserve a long break."
+      sleep 1200 && echo "Long break finished" &
+      for remaining in $(seq 1200 -1 1); do
+        echo -ne "\r$(date -u --date @${remaining} +%T)"
+        sleep 1
+      done
+      echo -ne "\n"
+    fi
+  done
+}
+
+timer
